@@ -1,4 +1,4 @@
-# acr-extension-name
+# acr-regex
 
 Arquivo config.json
 
