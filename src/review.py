@@ -20,6 +20,7 @@ def review(config):
         __review_file_content(
             path_code=path_source,
             validations=__validations_by_type("MERGE_FILE_CONTENT", validations),
+            path_code_origin=path_source,
         )
     )
 
@@ -47,22 +48,22 @@ def __review_merge_title(merge_title, validations):
     return comments
 
 
-def __review_file_content(path_code, validations):
+def __review_file_content(path_code, validations, path_code_origin):
     comments = []
 
     for content in os.listdir(path_code):
         path_content = os.path.join(path_code, content)
 
         if os.path.isfile(path_content):
-            comments.extend(__review_file_content_by_file(path_code, path_content, validations))
+            comments.extend(__review_file_content_by_file(path_content, validations, path_code_origin))
 
         elif os.path.isdir(path_content):
-            comments.extend(__review_file_content(path_content, validations))
+            comments.extend(__review_file_content(path_content, validations, path_code_origin))
 
     return comments
 
 
-def __review_file_content_by_file(path_code, path_content, validations):
+def __review_file_content_by_file(path_content, validations, path_code_origin):
     comments = []
 
     with open(path_content, 'r') as arquivo:
@@ -73,7 +74,7 @@ def __review_file_content_by_file(path_code, path_content, validations):
                 continue
 
             if __validate_regex_list(validation['regex'], content_code):
-                path_to_comment = str(path_content).replace(path_code + '/', '')
+                path_to_comment = str(path_content).replace(path_code_origin + '/', '')
                 comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
                 comments.append(__create_comment(__generate_md5(comment), comment))
 
