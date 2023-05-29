@@ -73,7 +73,7 @@ def __review_file_content_by_file(path_content, validations, path_code_origin):
             if not __validate_regex_list(validation['regexFile'], path_content):
                 continue
 
-            if __validate_regex_list(validation['regex'], content_code):
+            if __verify_if_add_comment(validation, content_code):
                 path_to_comment = str(path_content).replace(path_code_origin + '/', '')
                 comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
                 comments.append(__create_comment(__generate_md5(comment), comment))
@@ -104,3 +104,12 @@ def __generate_md5(string):
     md5_hash = hashlib.md5()
     md5_hash.update(string.encode('utf-8'))
     return md5_hash.hexdigest()
+
+
+def __verify_if_add_comment(validation, content_code):
+    found_by_regex = __validate_regex_list(validation['regex'], content_code)
+
+    if 'inverted' in validation and validation['inverted']:
+        return not found_by_regex
+
+    return found_by_regex

@@ -8,6 +8,7 @@ Arquivo config.json
     {
       "type": "MERGE_FILE_CONTENT",
       "message": "",
+      "inverted": false,
       "regexFile": [
         ""
       ],
