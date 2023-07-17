@@ -65,18 +65,20 @@ def __review_file_content(path_code, validations, path_code_origin):
 
 def __review_file_content_by_file(path_content, validations, path_code_origin):
     comments = []
+    content_code = None
 
-    with open(path_content, 'r') as arquivo:
-        content_code = arquivo.read()
+    for validation in validations:
+        if not __validate_regex_list(validation['regexFile'], path_content):
+            continue
 
-        for validation in validations:
-            if not __validate_regex_list(validation['regexFile'], path_content):
-                continue
+        if content_code is None:
+            with open(path_content, 'r') as arquivo:
+                content_code = arquivo.read()
 
-            if __verify_if_add_comment(validation, content_code):
-                path_to_comment = str(path_content).replace(path_code_origin + '/', '')
-                comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
-                comments.append(__create_comment(__generate_md5(comment), comment))
+        if __verify_if_add_comment(validation, content_code):
+            path_to_comment = str(path_content).replace(path_code_origin + '/', '')
+            comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
+            comments.append(__create_comment(__generate_md5(comment), comment))
 
     return comments
 
