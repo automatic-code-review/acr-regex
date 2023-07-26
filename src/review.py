@@ -78,7 +78,7 @@ def __review_file_content_by_file(path_content, validations, path_code_origin):
         if __verify_if_add_comment(validation, content_code):
             path_to_comment = str(path_content).replace(path_code_origin + '/', '')
             comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
-            comments.append(__create_comment(__generate_md5(comment), comment))
+            comments.append(__create_comment(__generate_md5(comment + path_to_comment), comment))
 
     return comments
 
