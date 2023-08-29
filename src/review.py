@@ -51,6 +51,9 @@ def __review_merge_title(merge_title, validations):
 def __review_file_content(path_code, validations, path_code_origin):
     comments = []
 
+    if not os.path.exists(path_code):
+        return []
+
     for content in os.listdir(path_code):
         path_content = os.path.join(path_code, content)
 
