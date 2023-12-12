@@ -9,7 +9,8 @@ Regex sobre os arquivos alterados: Nesse caso se algum regex da lista de match s
 3. Atributo message dentro do objeto da lista, se refere ao comentario que deve ser adicionado ao merge request
 4. Atributo inverted dentro do objeto da lista, se refere a inverter a validacao, ou seja para dizer que deve conter ou nao deve conter o regex no arquivo
 5. Atributo regexFile dentro do objeto da lista, se refere a lista de regex para verificar os arquivos que devem verificar o conteudo
-6. ATributo regex dentro do objeto da lista, se refere a lista de regex que devem ser verificados para adicionar ou nao o comentario no merge request
+6. Atributo regex dentro do objeto da lista, se refere a lista de regex que devem ser verificados para adicionar ou nao o comentario no merge request
+7. Atributo diffType dentro do objeto da lista, se refere a qual o tipo de diff a validação deve ser executada, sendo CREATE para novo arquivo, UPDATE para arquivo já existente, e quando não informado assume CREATE e UPDATE, ou seja ira executar indiferente se o arquivo é novo ou não
 
 Arquivo config.json
 
@@ -20,6 +21,10 @@ Arquivo config.json
       "type": "MERGE_FILE_CONTENT",
       "message": "",
       "inverted": false,
+      "diffType": [
+        "CREATE",
+        "UPDATE"
+      ],
       "regexFile": [
         ""
       ],

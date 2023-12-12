@@ -6,6 +6,7 @@ import re
 def review(config):
     validations = config['data']
     path_source = config['path_source']
+    diffs = config['merge']['changes']
 
     comments = []
 
@@ -21,6 +22,7 @@ def review(config):
             path_code=path_source,
             validations=__validations_by_type("MERGE_FILE_CONTENT", validations),
             path_code_origin=path_source,
+            diffs=diffs,
         )
     )
 
@@ -48,7 +50,7 @@ def __review_merge_title(merge_title, validations):
     return comments
 
 
-def __review_file_content(path_code, validations, path_code_origin):
+def __review_file_content(path_code, validations, path_code_origin, diffs):
     comments = []
 
     if not os.path.exists(path_code):
@@ -58,15 +60,38 @@ def __review_file_content(path_code, validations, path_code_origin):
         path_content = os.path.join(path_code, content)
 
         if os.path.isfile(path_content):
-            comments.extend(__review_file_content_by_file(path_content, validations, path_code_origin))
+            comments.extend(__review_file_content_by_file(path_content, validations, path_code_origin, diffs))
 
         elif os.path.isdir(path_content):
-            comments.extend(__review_file_content(path_content, validations, path_code_origin))
+            comments.extend(__review_file_content(path_content, validations, path_code_origin, diffs))
 
     return comments
 
 
-def __review_file_content_by_file(path_content, validations, path_code_origin):
+def __validate_diff_type(validation, path_final, diffs):
+    if 'diffType' not in validation:
+        return True
+
+    diff = None
+
+    for diff_it in diffs:
+        if diff_it['new_path'] == path_final:
+            diff = diff_it
+            break
+
+    if diff is None:
+        return False
+
+    if diff['new_file'] and 'CREATE' not in validation['diffType']:
+        return False
+
+    if not diff['new_file'] and 'UPDATE' not in validation['diffType']:
+        return False
+
+    return True
+
+
+def __review_file_content_by_file(path_content, validations, path_code_origin, diffs):
     comments = []
     content_code = None
 
@@ -74,12 +99,16 @@ def __review_file_content_by_file(path_content, validations, path_code_origin):
         if not __validate_regex_list(validation['regexFile'], path_content):
             continue
 
+        path_to_comment = str(path_content).replace(path_code_origin + '/', '')
+
+        if not __validate_diff_type(validation, path_to_comment, diffs):
+            continue
+
         if content_code is None:
             with open(path_content, 'r') as arquivo:
                 content_code = arquivo.read()
 
         if __verify_if_add_comment(validation, content_code):
-            path_to_comment = str(path_content).replace(path_code_origin + '/', '')
             comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
             comments.append(__create_comment(__generate_md5(comment + path_to_comment), comment))
 
