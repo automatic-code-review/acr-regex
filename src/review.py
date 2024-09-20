@@ -112,8 +112,12 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
             continue
 
         if content_code is None:
-            with open(path_content, 'r') as arquivo:
-                content_code = arquivo.read()
+            try:
+                with open(path_content, 'r') as arquivo:
+                    content_code = arquivo.read()
+            except UnicodeDecodeError as _:
+                content_code = ""
+                print(f"Read error {path_content}")
 
         if __verify_if_add_comment(validation, content_code):
             comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
