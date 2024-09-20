@@ -48,7 +48,7 @@ def __review_merge_title(merge_title, validations):
     for validation in validations:
         if not __validate_regex_list(validation['regex'], content=merge_title):
             comment = validation['message']
-            comments.append(__create_comment(__generate_md5(comment), comment))
+            comments.append(__create_comment(__generate_md5(comment), comment, None))
 
     return comments
 
@@ -117,15 +117,22 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
 
         if __verify_if_add_comment(validation, content_code):
             comment = validation['message'].replace("${FILE_PATH}", path_to_comment)
-            comments.append(__create_comment(__generate_md5(comment + path_to_comment), comment))
+            comments.append(__create_comment(__generate_md5(comment + path_to_comment), comment, path_to_comment))
 
     return comments
 
 
-def __create_comment(comment_id, comment):
+def __create_comment(comment_id, comment, path):
     return {
         "id": comment_id,
         "comment": comment,
+        "position": {
+            "language": None,
+            "path": path,
+            "startInLine": 1,
+            "endInLine": 1,
+            "snipset": False
+        }
     }
 
 
