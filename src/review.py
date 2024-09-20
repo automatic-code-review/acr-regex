@@ -11,12 +11,13 @@ def review(config):
 
     comments = []
 
-    comments.extend(
-        __review_merge_title(
-            merge_title=config['merge']['title'],
-            validations=__validations_by_type("MERGE_TITLE", validations),
+    if 'title' in merge:
+        comments.extend(
+            __review_merge_title(
+                merge_title=merge['title'],
+                validations=__validations_by_type("MERGE_TITLE", validations),
+            )
         )
-    )
 
     comments.extend(
         __review_file_content(
