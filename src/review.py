@@ -6,7 +6,8 @@ import re
 def review(config):
     validations = config['data']
     path_source = config['path_source']
-    diffs = config['merge']['changes']
+    merge = config['merge']
+    diffs = merge['changes']
 
     comments = []
 
@@ -23,6 +24,7 @@ def review(config):
             validations=__validations_by_type("MERGE_FILE_CONTENT", validations),
             path_code_origin=path_source,
             diffs=diffs,
+            merge=merge,
         )
     )
 
@@ -50,7 +52,7 @@ def __review_merge_title(merge_title, validations):
     return comments
 
 
-def __review_file_content(path_code, validations, path_code_origin, diffs):
+def __review_file_content(path_code, validations, path_code_origin, diffs, merge):
     comments = []
 
     if not os.path.exists(path_code):
@@ -60,10 +62,10 @@ def __review_file_content(path_code, validations, path_code_origin, diffs):
         path_content = os.path.join(path_code, content)
 
         if os.path.isfile(path_content):
-            comments.extend(__review_file_content_by_file(path_content, validations, path_code_origin, diffs))
+            comments.extend(__review_file_content_by_file(path_content, validations, path_code_origin, diffs, merge))
 
         elif os.path.isdir(path_content):
-            comments.extend(__review_file_content(path_content, validations, path_code_origin, diffs))
+            comments.extend(__review_file_content(path_content, validations, path_code_origin, diffs, merge))
 
     return comments
 
@@ -91,12 +93,16 @@ def __validate_diff_type(validation, path_final, diffs):
     return True
 
 
-def __review_file_content_by_file(path_content, validations, path_code_origin, diffs):
+def __review_file_content_by_file(path_content, validations, path_code_origin, diffs, merge):
     comments = []
     content_code = None
+    project_name = merge['project_name']
 
     for validation in validations:
         if not __validate_regex_list(validation['regexFile'], path_content):
+            continue
+
+        if 'projects' in validation and project_name not in validation['projects']:
             continue
 
         path_to_comment = str(path_content).replace(path_code_origin + '/', '')
