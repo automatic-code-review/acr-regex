@@ -19,15 +19,23 @@ def review(config):
             )
         )
 
-    comments.extend(
-        __review_file_content(
-            path_code=path_source,
-            validations=__validations_by_type("MERGE_FILE_CONTENT", validations),
-            path_code_origin=path_source,
-            diffs=diffs,
-            merge=merge,
+    validations_file_content = __validations_by_type("MERGE_FILE_CONTENT", validations)
+
+    for change in diffs:
+        if change['deleted_file']:
+            continue
+
+        path_code = os.path.join(path_source, change['new_path'])
+
+        comments.extend(
+            __review_file_content_by_file(
+                path_code,
+                validations_file_content,
+                path_source,
+                diffs,
+                merge
+            )
         )
-    )
 
     return comments
 
@@ -49,24 +57,6 @@ def __review_merge_title(merge_title, validations):
         if not __validate_regex_list(validation['regex'], content=merge_title):
             comment = validation['message']
             comments.append(__create_comment(__generate_md5(comment), comment, None))
-
-    return comments
-
-
-def __review_file_content(path_code, validations, path_code_origin, diffs, merge):
-    comments = []
-
-    if not os.path.exists(path_code):
-        return []
-
-    for content in os.listdir(path_code):
-        path_content = os.path.join(path_code, content)
-
-        if os.path.isfile(path_content):
-            comments.extend(__review_file_content_by_file(path_content, validations, path_code_origin, diffs, merge))
-
-        elif os.path.isdir(path_content):
-            comments.extend(__review_file_content(path_content, validations, path_code_origin, diffs, merge))
 
     return comments
 
