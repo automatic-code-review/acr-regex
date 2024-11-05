@@ -1,16 +1,6 @@
-import json
-import os
+from automatic_code_review_commons import review_run
 
 from src import review
 
 if __name__ == "__main__":
-    path_config = os.path.dirname(os.path.abspath(__file__)) + "/config.json"
-
-    with open(path_config, 'r') as arquivo:
-        config = json.load(arquivo)
-
-    comments = review.review(config)
-    path_output = config['path_output']
-
-    with open(path_output, 'w') as arquivo:
-        json.dump(comments, arquivo, indent=True)
+    review_run(review.review)
