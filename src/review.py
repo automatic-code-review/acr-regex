@@ -196,6 +196,9 @@ def __find_occurrences_with_lines(content, pattern):
 
         line_end = current_line - 1
 
+        if line_end < line_start:
+            line_end = line_start
+
         results.append((line_start, line_end))
 
     return results
