@@ -58,16 +58,19 @@ def __review_merge_title(merge_title, validations):
         found, _ = __validate_regex_list(validation['regex'], content=merge_title)
 
         if not found:
-            comment = validation['message']
-            comments.append(commons.comment_create(
-                comment_id=commons.comment_generate_id(comment),
+            description_comment = validation['message']
+            comment = commons.comment_create(
+                comment_id=commons.comment_generate_id(description_comment),
                 comment_path=None,
-                comment_description=comment,
+                comment_description=description_comment,
                 comment_snipset=False,
                 comment_end_line=None,
                 comment_start_line=None,
                 comment_language=None,
-            ))
+            )
+            if 'processorArgs' in validation:
+                comment['processorArgs'] = validation['processorArgs']
+            comments.append(comment)
 
     return comments
 
@@ -138,7 +141,7 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
                 comment_description = comment_description.replace("${LINE_START}", str(start_line))
                 comment_description = comment_description.replace("${LINE_END}", str(end_line))
                 comment_unique_id = f"{comment_description} - {path_to_comment} - {start_line} - {end_line}"
-                comments.append(commons.comment_create(
+                comment = commons.comment_create(
                     comment_id=commons.comment_generate_id(comment_unique_id),
                     comment_path=path_to_comment,
                     comment_description=comment_description,
@@ -146,7 +149,10 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
                     comment_end_line=end_line,
                     comment_start_line=start_line,
                     comment_language=None,
-                ))
+                )
+                if 'processorArgs' in validation:
+                    comment['processorArgs'] = validation['processorArgs']
+                comments.append(comment)
 
     return comments
 
