@@ -232,7 +232,7 @@ def __review_merge_commit(merge_commits, validations):
                 comments.append(comment)
 
     if group_description_comment:
-        description_comment = '\n'.join(group_description_comment)
+        description_comment = '<br>'.join(group_description_comment)
         comment = __review_merge_create_comment(description_comment)
         comments.append(comment)
 
