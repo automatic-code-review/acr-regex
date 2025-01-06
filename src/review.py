@@ -20,6 +20,14 @@ def review(config):
             )
         )
 
+    if 'commits' in merge:
+        comments.extend(
+            __review_merge_commit(
+                merge_commits=merge['commits'],
+                validations=__validations_by_type("COMMIT_TITLE", validations),
+            )
+        )
+
     validations_file_content = __validations_by_type("MERGE_FILE_CONTENT", validations)
 
     for change in diffs:
@@ -59,15 +67,7 @@ def __review_merge_title(merge_title, validations):
 
         if not found:
             description_comment = validation['message']
-            comment = commons.comment_create(
-                comment_id=commons.comment_generate_id(description_comment),
-                comment_path=None,
-                comment_description=description_comment,
-                comment_snipset=False,
-                comment_end_line=None,
-                comment_start_line=None,
-                comment_language=None,
-            )
+            comment = __review_merge_create_comment(description_comment)
             if 'processorArgs' in validation:
                 comment['processorArgs'] = validation['processorArgs']
             comments.append(comment)
@@ -207,4 +207,44 @@ def __find_occurrences_with_lines(content, pattern):
 
         results.append((line_start, line_end))
 
-    return results
+    return 
+
+def __review_merge_commit(merge_commits, validations):
+    comments = []
+    group_description_comment = []
+
+    for commit in merge_commits:
+        title = commit['title']
+        
+        for validation in validations:
+            is_group_message = validation['groupMessage']
+            found, _ = __validate_regex_list(validation['regex'], content=title)
+
+            if not found:                
+                description_comment = validation['message']
+                comment_description = comment_description.replace("${COMMIT_TITLE}", str(title))
+                if is_group_message:
+                    group_description_comment.append(comment_description)
+                    continue
+                comment = __review_merge_create_comment(description_comment)
+                if 'processorArgs' in validation:
+                    comment['processorArgs'] = validation['processorArgs']
+                comments.append(comment)
+
+    if group_description_comment:
+        description_comment = '\n'.join(group_description_comment)
+        comment = __review_merge_create_comment(description_comment)
+        comments.append(comment)
+
+    return comments
+
+def __review_merge_create_comment(description_comment):
+    return commons.comment_create(
+                    comment_id=commons.comment_generate_id(description_comment),
+                    comment_path=None,
+                    comment_description=description_comment,
+                    comment_snipset=False,
+                    comment_end_line=None,
+                    comment_start_line=None,
+                    comment_language=None,
+                )
