@@ -2,7 +2,7 @@
 
 Extensao que verifica uma serie de regex sobre o conteudo do merge request<br>
 Regex sobre o titulo do merge request: Nesse caso se algum regex da lista nao de match sobre o titulo do merge, ira adicionar um comentario. Para esse caso o type sera MERGE_TITLE<br>
-Regex sobre os arquivos alterados: Nesse caso se algum regex da lista de match sobre o conteudo de algum arquivo, ira adicionar um comentario. Para esse caso o type sera MERGE_FILE_CONTENT
+Regex sobre os arquivos alterados: Nesse caso se algum regex da lista de match sobre o conteudo de algum arquivo, ira adicionar um comentario. Para esse caso o type sera MERGE_FILE_CONTENT<br>
 Regex sobre os título dos commits: Nesse caso se algum regex da lista nao de match sobre o conteudo de algum título do commit, ira adicionar um comentario. Para esse caso o type sera COMMIT_TITLE
 
 1. Atributo data e uma lista de objetos, aonde cada objeto se refere a uma validacao
