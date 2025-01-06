@@ -222,9 +222,9 @@ def __review_merge_commit(merge_commits, validations):
 
             if not found:                
                 description_comment = validation['message']
-                comment_description = comment_description.replace("${COMMIT_TITLE}", str(title))
+                description_comment = description_comment.replace("${COMMIT_TITLE}", str(title))
                 if is_group_message:
-                    group_description_comment.append(comment_description)
+                    group_description_comment.append(description_comment)
                     continue
                 comment = __review_merge_create_comment(description_comment)
                 if 'processorArgs' in validation:
