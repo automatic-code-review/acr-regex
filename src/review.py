@@ -207,7 +207,7 @@ def __find_occurrences_with_lines(content, pattern):
 
         results.append((line_start, line_end))
 
-    return 
+    return results
 
 def __review_merge_commit(merge_commits, validations):
     comments = []
