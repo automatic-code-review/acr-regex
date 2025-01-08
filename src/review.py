@@ -211,30 +211,34 @@ def __find_occurrences_with_lines(content, pattern):
 
 def __review_merge_commit(merge_commits, validations):
     comments = []
-    group_description_comment = []
-
-    for commit in merge_commits:
-        title = commit['title']
+    
+    for validation in validations:
+        group_title_commit = []
+        is_group_message = validation['groupMessage']
+        description_comment = validation['message']
         
-        for validation in validations:
-            is_group_message = validation['groupMessage']
+        for commit in merge_commits:
+            title = str(commit['title'])
             found, _ = __validate_regex_list(validation['regex'], content=title)
 
-            if not found:                
-                description_comment = validation['message']
-                description_comment = description_comment.replace("${COMMIT_TITLE}", str(title))
+            if not found:
                 if is_group_message:
-                    group_description_comment.append(description_comment)
-                    continue
-                comment = __review_merge_create_comment(description_comment)
-                if 'processorArgs' in validation:
-                    comment['processorArgs'] = validation['processorArgs']
-                comments.append(comment)
+                    group_title_commit.append('- '+title)
+                else:
+                    description_comment_with_title = description_comment.replace("${COMMIT_TITLE}", title)
+                    comment = __review_merge_create_comment(description_comment_with_title)
+                    comments.append(comment)
+                    if 'processorArgs' in validation:
+                        comment['processorArgs'] = validation['processorArgs']
+                    comments.append(comment)
 
-    if group_description_comment:
-        description_comment = '<br>'.join(group_description_comment)
-        comment = __review_merge_create_comment(description_comment)
-        comments.append(comment)
+        if group_title_commit:
+            description_comment_without_title = description_comment.replace("${COMMIT_TITLE}", '')
+            description_comment_without_title += '<br>'.join(group_title_commit)
+            comment = __review_merge_create_comment(description_comment_without_title)
+            if 'processorArgs' in validation:
+                comment['processorArgs'] = validation['processorArgs']
+            comments.append(comment)
 
     return comments
 
