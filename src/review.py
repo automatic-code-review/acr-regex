@@ -136,11 +136,15 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
             for group in groups_line:
                 end_line = group[1]
                 start_line = group[0]
+                end_pos = group[3]
+                start_pos = group[2]
 
                 comment_description = validation['message'].replace("${FILE_PATH}", path_to_comment)
                 comment_description = comment_description.replace("${LINE_START}", str(start_line))
                 comment_description = comment_description.replace("${LINE_END}", str(end_line))
-                comment_unique_id = f"{comment_description} - {path_to_comment} - {start_line} - {end_line}"
+                comment_description = comment_description.replace("${POS_START}", str(start_pos))
+                comment_description = comment_description.replace("${POS_END}", str(end_pos))
+                comment_unique_id = f"{comment_description} - {path_to_comment} - {start_line} - {end_line} - {start_pos} - {end_pos}"
                 comment = commons.comment_create(
                     comment_id=commons.comment_generate_id(comment_unique_id),
                     comment_path=path_to_comment,
@@ -194,7 +198,7 @@ def __find_occurrences_with_lines(content, pattern):
             current_pos += len(lines[current_line - 1])
             current_line += 1
 
-        line_start = current_line
+        line_start = current_line - 1
 
         while current_pos < end_pos:
             current_pos += len(lines[current_line - 1])
@@ -205,7 +209,7 @@ def __find_occurrences_with_lines(content, pattern):
         if line_end < line_start:
             line_end = line_start
 
-        results.append((line_start, line_end))
+        results.append((line_start, line_end, start_pos, end_pos))
 
     return results
 
