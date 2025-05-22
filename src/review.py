@@ -136,8 +136,12 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
             for group in groups_line:
                 end_line = group[1]
                 start_line = group[0]
-                end_pos = group[3]
-                start_pos = group[2]
+                if len(group) > 2:
+                    end_pos = group[3]
+                    start_pos = group[2]
+                else:
+                    end_pos = 0
+                    start_pos = 0
 
                 comment_description = validation['message'].replace("${FILE_PATH}", path_to_comment)
                 comment_description = comment_description.replace("${LINE_START}", str(start_line))
