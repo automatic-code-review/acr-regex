@@ -112,6 +112,9 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
         if 'projects' in validation and project_name not in validation['projects']:
             continue
 
+        if 'projectsIgnore' in validation and project_name in validation['projectsIgnore']:
+            continue
+
         path_to_comment = str(path_content).replace(path_code_origin + '/', '')
 
         if not __validate_diff_type(validation, path_to_comment, diffs):
