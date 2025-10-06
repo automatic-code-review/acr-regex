@@ -13,6 +13,7 @@ Regex sobre os título dos commits: Nesse caso se algum regex da lista nao de ma
 6. Atributo regex dentro do objeto da lista, se refere a lista de regex que devem ser verificados para adicionar ou nao o comentario no merge request
 7. Atributo diffType dentro do objeto da lista, se refere a qual o tipo de diff a validação deve ser executada, sendo CREATE para novo arquivo, UPDATE para arquivo já existente, e quando não informado assume CREATE e UPDATE, ou seja ira executar indiferente se o arquivo é novo ou não
 8. Atributo projects define em quais projetos tem que verificar, se não tiver o atributo assume pra todos
+9. Atributo projectsIgnore define em quais projetos não tem que verificar
 
 Arquivo config.json
 
