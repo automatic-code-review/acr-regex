@@ -6,6 +6,7 @@ import automatic_code_review_commons as commons
 
 def review(config):
     validations = config['data']
+    execution_purpose = config.get('executionPurpose')
     path_source = config['path_source']
     merge = config['merge']
     diffs = merge['changes']
@@ -16,7 +17,7 @@ def review(config):
         comments.extend(
             __review_merge_title(
                 merge_title=merge['title'],
-                validations=__validations_by_type("MERGE_TITLE", validations),
+                validations=__validations_by_type("MERGE_TITLE", validations, execution_purpose),
             )
         )
 
@@ -24,11 +25,13 @@ def review(config):
         comments.extend(
             __review_merge_commit(
                 merge_commits=merge['commits'],
-                validations=__validations_by_type("COMMIT_TITLE", validations),
+                validations=__validations_by_type("COMMIT_TITLE", validations, execution_purpose),
             )
         )
 
-    validations_file_content = __validations_by_type("MERGE_FILE_CONTENT", validations)
+    validations_file_content = __validations_by_type(
+        "MERGE_FILE_CONTENT", validations, execution_purpose
+    )
 
     for change in diffs:
         if change['deleted_file']:
@@ -49,11 +52,16 @@ def review(config):
     return comments
 
 
-def __validations_by_type(tp_validation, validations):
+def __validations_by_type(tp_validation, validations, execution_purpose=None):
     validations_filtered = []
 
     for validation in validations:
-        if validation["type"] == tp_validation:
+        validation_purposes = validation.get('executionPurpose')
+
+        if validation["type"] != tp_validation:
+            continue
+
+        if validation_purposes is None or execution_purpose in validation_purposes:
             validations_filtered.append(validation)
 
     return validations_filtered

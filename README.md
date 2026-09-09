@@ -14,14 +14,21 @@ Regex sobre os título dos commits: Nesse caso se algum regex da lista nao de ma
 7. Atributo diffType dentro do objeto da lista, se refere a qual o tipo de diff a validação deve ser executada, sendo CREATE para novo arquivo, UPDATE para arquivo já existente, e quando não informado assume CREATE e UPDATE, ou seja ira executar indiferente se o arquivo é novo ou não
 8. Atributo projects define em quais projetos tem que verificar, se não tiver o atributo assume pra todos
 9. Atributo projectsIgnore define em quais projetos não tem que verificar
+10. Atributo executionPurpose no config define o contexto da execução: `merge_request_review` ou `source_code_review`; quando não informado, permanece compatível com as regras sem propósito definido
+11. Atributo executionPurpose dentro de uma validação define uma lista de contextos em que ela deve ser executada; quando não informado, a regra é executada em qualquer contexto
 
 Arquivo config.json
 
 ```json
 {
+  "executionPurpose": "merge_request_review",
   "data": [
     {
       "type": "MERGE_FILE_CONTENT",
+      "executionPurpose": [
+        "merge_request_review",
+        "source_code_review"
+      ],
       "message": "",
       "projects": [
         ""
