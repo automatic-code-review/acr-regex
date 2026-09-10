@@ -1,6 +1,6 @@
 # acr-regex
 
-![Tests](https://github.com/OWNER/REPO/actions/workflows/tests.yml/badge.svg)
+[![Tests](https://github.com/automatic-code-review/acr-regex/actions/workflows/tests.yml/badge.svg)](https://github.com/automatic-code-review/acr-regex/actions/workflows/tests.yml)
 
 Extensao que verifica uma serie de regex sobre o conteudo do merge request<br>
 Regex sobre o titulo do merge request: Nesse caso se algum regex da lista nao de match sobre o titulo do merge, ira adicionar um comentario. Para esse caso o type sera MERGE_TITLE<br>
