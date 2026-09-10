@@ -1,5 +1,7 @@
 # acr-regex
 
+![Tests](https://github.com/OWNER/REPO/actions/workflows/tests.yml/badge.svg)
+
 Extensao que verifica uma serie de regex sobre o conteudo do merge request<br>
 Regex sobre o titulo do merge request: Nesse caso se algum regex da lista nao de match sobre o titulo do merge, ira adicionar um comentario. Para esse caso o type sera MERGE_TITLE<br>
 Regex sobre os arquivos alterados: Nesse caso se algum regex da lista de match sobre o conteudo de algum arquivo, ira adicionar um comentario. Para esse caso o type sera MERGE_FILE_CONTENT<br>
