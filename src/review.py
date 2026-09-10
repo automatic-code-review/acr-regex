@@ -61,8 +61,10 @@ def __validations_by_type(tp_validation, validations, execution_purpose=None):
         if validation["type"] != tp_validation:
             continue
 
-        if validation_purposes is None or execution_purpose in validation_purposes:
-            validations_filtered.append(validation)
+        if validation_purposes is not None and execution_purpose is not None and execution_purpose not in validation_purposes:
+            continue
+
+        validations_filtered.append(validation)
 
     return validations_filtered
 
