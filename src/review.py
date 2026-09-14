@@ -32,6 +32,9 @@ def review(config):
     validations_file_content = __validations_by_type(
         "MERGE_FILE_CONTENT", validations, execution_purpose
     )
+    validations_file_path = __validations_by_type(
+        "MERGE_FILE_PATH", validations, execution_purpose
+    )
 
     for change in diffs:
         if change['deleted_file']:
@@ -43,6 +46,16 @@ def review(config):
             __review_file_content_by_file(
                 path_code,
                 validations_file_content,
+                path_source,
+                diffs,
+                merge
+            )
+        )
+
+        comments.extend(
+            __review_file_path_by_file(
+                path_code,
+                validations_file_path,
                 path_source,
                 diffs,
                 merge
@@ -174,6 +187,46 @@ def __review_file_content_by_file(path_content, validations, path_code_origin, d
                 if 'processorArgs' in validation:
                     comment['processorArgs'] = validation['processorArgs']
                 comments.append(comment)
+
+    return comments
+
+
+def __review_file_path_by_file(path_content, validations, path_code_origin, diffs, merge):
+    comments = []
+    project_name = merge['project_name']
+
+    for validation in validations:
+        found, _ = __validate_regex_list(validation['regexFile'], path_content)
+
+        if not found:
+            continue
+
+        if 'projects' in validation and project_name not in validation['projects']:
+            continue
+
+        if 'projectsIgnore' in validation and project_name in validation['projectsIgnore']:
+            continue
+
+        path_to_comment = str(path_content).replace(path_code_origin + '/', '')
+
+        if not __validate_diff_type(validation, path_to_comment, diffs):
+            continue
+
+        comment_description = validation['message'].replace("${FILE_PATH}", path_to_comment)
+
+        comment_unique_id = f"{comment_description} - {path_to_comment}"
+        comment = commons.comment_create(
+            comment_id=commons.comment_generate_id(comment_unique_id),
+            comment_path=path_to_comment,
+            comment_description=comment_description,
+            comment_snipset=False,
+            comment_end_line=None,
+            comment_start_line=None,
+            comment_language=None,
+        )
+        if 'processorArgs' in validation:
+            comment['processorArgs'] = validation['processorArgs']
+        comments.append(comment)
 
     return comments
 
